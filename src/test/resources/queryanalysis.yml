@@ -1,10 +1,9 @@
 rules:
-  authors:
-    matchers:
-      - publisher
-      - publisher_marker
-    params:
-      qf: authors^1000
+  -  matchers:
+        - publisher
+        - publisher_marker
+     params:
+       qf: authors^1000
 
 matchers:
   publisher:

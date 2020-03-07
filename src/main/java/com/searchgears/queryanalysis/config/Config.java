@@ -5,8 +5,13 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Config {
+    private List<Rule> rules;
+
     public static Config fromFile(String fileName) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Config config = null;
@@ -17,7 +22,14 @@ public class Config {
         }
         return config;
     }
-    public Rules getRules() {
-        return null;
+
+    public List<Rule> getRules() {
+        return new ArrayList<>(rules);
     }
+
+    public void setRules(List<Rule> pRules) {
+        rules = new ArrayList<>(pRules);
+    }
+
+
 }

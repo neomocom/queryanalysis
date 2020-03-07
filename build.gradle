@@ -1,0 +1,43 @@
+buildscript {
+    ext.javaRepos = {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+plugins {
+    id 'com.github.ben-manes.versions' version '0.28.0'
+}
+
+
+repositories javaRepos
+
+apply plugin: 'java'
+
+javadoc.failOnError = false
+
+sourceCompatibility = JavaVersion.VERSION_12
+targetCompatibility = JavaVersion.VERSION_12
+
+version = 1.0
+
+apply plugin: 'maven-publish'
+
+dependencies {
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.slf4j:slf4j-jdk14:$slf4jVersion"
+    testImplementation "org.apache.lucene:lucene-test-framework:$luceneVersion"
+    testImplementation "org.apache.solr:solr-test-framework:$luceneVersion"
+
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
+    implementation "org.apache.solr:solr-core:$luceneVersion"
+    implementation "org.slf4j:slf4j-api:$slf4jVersion"
+    implementation "org.apache.lucene:lucene-core:$luceneVersion"
+    implementation "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
+}
+
+
+
+sourceSets.test {
+    resources.srcDirs = ["src/test/resources"]
+}

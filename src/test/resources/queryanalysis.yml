@@ -1,0 +1,14 @@
+rules:
+  authors:
+    matchers:
+      - publisher
+      - publisher_marker
+    params:
+      qf: authors^1000
+
+matchers:
+  publisher:
+    dictionary: test.dic
+
+  publisher_marker:
+    regex: 'Verlag|GmbH|& Co."

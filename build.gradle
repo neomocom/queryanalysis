@@ -24,7 +24,7 @@ version = 1.0
 apply plugin: 'maven-publish'
 
 dependencies {
-    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     testImplementation "org.slf4j:slf4j-jdk14:$slf4jVersion"
     testImplementation "org.apache.lucene:lucene-test-framework:$luceneVersion"
     testImplementation "org.apache.solr:solr-test-framework:$luceneVersion"
@@ -37,7 +37,14 @@ dependencies {
 }
 
 
-
 sourceSets.test {
     resources.srcDirs = ["src/test/resources"]
+}
+
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }

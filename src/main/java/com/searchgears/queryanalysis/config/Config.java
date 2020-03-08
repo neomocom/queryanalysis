@@ -21,6 +21,7 @@ public class Config {
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not open file. ", e);
         }
+        config.validate();
         return config;
     }
 
@@ -39,5 +40,16 @@ public class Config {
 
     public Map<String, Matcher> getMatchers() {
         return Collections.unmodifiableMap(matchers);
+    }
+
+    private void validate() {
+        for (Rule rule: rules) {
+            for (String matcher : rule.getMatchers()) {
+                Matcher matcherDefintion = matchers.get(matcher);
+                if (matcherDefintion == null) {
+                    throw new IllegalArgumentException("No definition for matcher " + matcher + ". ");
+                }
+            }
+        }
     }
 }

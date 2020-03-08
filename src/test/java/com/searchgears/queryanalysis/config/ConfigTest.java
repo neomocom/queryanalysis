@@ -1,4 +1,4 @@
-package com.searchgears.queryanalysis;
+package com.searchgears.queryanalysis.config;
 
 import com.searchgears.queryanalysis.config.Config;
 import com.searchgears.queryanalysis.config.Matcher;
@@ -18,9 +18,9 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(JUnit4.class)
-public class ConfigParserTest {
+public class ConfigTest {
     private Config config;
     private List<Rule> rules;
     private Map<String, Matcher> matchers;
@@ -59,6 +59,13 @@ public class ConfigParserTest {
         assertEquals("publisher.dic", matchers.get("publisher").getDictionary());
     }
 
+    @Test
+    public void matcherWithoutDefinitionThrows() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            parseConfig("queryanalysis-invalid.yml");
+        });
+        assertEquals("No definition for matcher foobasel. ", exception.getMessage());
+    }
 
     private Config parseConfig(String fileName) {
         String file = ClassLoader.getSystemClassLoader()

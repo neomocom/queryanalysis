@@ -19,7 +19,7 @@ public class Config {
         try {
             config = mapper.readValue(new File(fileName), Config.class);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Could not open file. ", e);
+            throw new IllegalArgumentException("Error reading file \"" + fileName + "\". ");
         }
         config.validate();
         return config;

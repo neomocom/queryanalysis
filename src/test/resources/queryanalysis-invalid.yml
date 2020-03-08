@@ -1,0 +1,14 @@
+rules:
+  -  matchers:
+        - publisher
+        - publisher_marker
+        - foobasel
+     params:
+       qf: authors^1000
+
+matchers:
+  publisher:
+    dictionary: publisher.dic
+
+  publisher_marker:
+    dictionary: publisher_marker.dic

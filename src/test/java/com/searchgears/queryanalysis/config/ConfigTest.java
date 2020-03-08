@@ -1,31 +1,20 @@
 package com.searchgears.queryanalysis.config;
 
-import com.searchgears.queryanalysis.config.Config;
-import com.searchgears.queryanalysis.config.Matcher;
-import com.searchgears.queryanalysis.config.Rule;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigTest {
     private Config config;
     private List<Rule> rules;
     private Map<String, Matcher> matchers;
 
-    @Before
+    @BeforeEach
     public void readConfig() {
         config = parseConfig("queryanalysis.yml");
         rules = config.getRules();
@@ -47,7 +36,6 @@ public class ConfigTest {
         assertEquals(params.get("qf"), "authors^1000");
     }
 
-
     @Test
     public void matchersAreReadCorrectly() {
         assertTrue(matchers.size() == 2);
@@ -66,6 +54,15 @@ public class ConfigTest {
         });
         assertEquals("No definition for matcher foobasel. ", exception.getMessage());
     }
+
+    @Test
+    public void nonExistingConfigFileThrows() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            Config.fromFile("non-existing");
+        });
+        assertEquals("Error reading file \"non-existing\". ", exception.getMessage());
+    }
+
 
     private Config parseConfig(String fileName) {
         String file = ClassLoader.getSystemClassLoader()

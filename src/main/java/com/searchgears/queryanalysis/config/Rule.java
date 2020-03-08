@@ -6,20 +6,18 @@ public class Rule {
     private List<String> matchers;
     private Map<String, String> params;
 
-    public Map<String, String> getParams() {
-        return new HashMap<>(params);
-    }
+    public Rule() {}
 
-    public void setParams(Map<String, String> params) {
-        this.params = new HashMap<>(params);
+    public Rule(List<String> pMatchers, Map<String, String> pParams) {
+        matchers = new ArrayList<>(pMatchers);
+        params = new HashMap<>(pParams);
     }
 
     public List<String> getMatchers() {
-        return new ArrayList<>(matchers);
+        return Collections.unmodifiableList(matchers);
     }
 
-    public void setMatchers(List<String> pMatchters) {
-        matchers = new ArrayList<>(pMatchters);
+    public Map<String, String> getParams() {
+        return Collections.unmodifiableMap(params);
     }
-
 }

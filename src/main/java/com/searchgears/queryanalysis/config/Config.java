@@ -13,6 +13,9 @@ public class Config {
     private List<Rule> rules;
     private Map<String, Matcher> matchers;
 
+    /*
+        TODO: Convert to use Path
+     */
     public static Config fromFile(String fileName) {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Config config = null;

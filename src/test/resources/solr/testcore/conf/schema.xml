@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" ?>
+<schema name="index" version="1.1">
+	<!-- Schema configuration for the Author Index schema.
+		Important! Every field must be set to stored="true" to enable update functionality!
+	 -->
+	<types>
+		<fieldType name="pdate" class="solr.DatePointField" docValues="true" /> 
+		<fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true" />
+    <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+    <fieldType name="pint" class="solr.IntPointField" docValues="true" sortMissingLast="true"/>
+
+	    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+            <analyzer>
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory" />
+                <filter class="solr.GermanNormalizationFilterFactory" />                
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="codelistSearch" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+            <analyzer>
+                <tokenizer class="solr.WhitespaceTokenizerFactory" />
+                <filter class="solr.LowerCaseFilterFactory" />
+            </analyzer>
+        </fieldType>
+
+        <fieldType name="isbnFieldType" class="solr.TextField" omitNorms="true">
+            <analyzer>
+                <charFilter class="solr.MappingCharFilterFactory" mapping="minus.txt" />
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+            </analyzer>
+        </fieldType>
+
+	</types>
+
+
+	<fields>
+		<field name="_version_" type="plong" indexed="true" stored="true" multiValued="false" /> <!-- Solr necessity for optimistic locking -->
+        <field name="text" type="text" indexed="true" stored="false" multiValued="true"/>
+        
+        <!-- general -->
+        <field name="id" type="string" indexed="true" stored="true" multiValued="false" required="true" />
+
+        <field name="author" type="text" indexed="true" stored="true" multiValued="false" required="false" /> <!-- The Author Index (AU) -->
+        <field name="AUPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="publisher" type="text" indexed="true" stored="true" multiValued="false" required="false" /> <!-- The Publisher Index (VL) -->
+        <field name="VLPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="setOrSeriesTitle" type="text" indexed="true" stored="true" multiValued="false" required="false" />  <!-- Set and Series Index (RH) -->
+        <field name="RHPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="title" type="text" indexed="true" stored="true" multiValued="false" required="false" /> <!-- Title Index (TI) -->
+        <field name="TIPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="identifier" type="isbnFieldType" indexed="true" stored="true" multiValued="false" required="false" /> <!-- Identifier Index (IS) -->
+        <field name="ISPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+
+        <field name="keyword" type="text" indexed="true" stored="true" multiValued="false" required="false" /> <!-- Keyword Index (SW) -->
+        <field name="SWPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="classification" type="codelistSearch" indexed="true" stored="true" multiValued="false" required="false" /> <!-- Classification Index (WG) -->
+        <field name="WGPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="ddcKeyword" type="codelistSearch" indexed="true" stored="true" multiValued="false" required="false" /> <!--  DDC Index (DW) -->
+        <field name="DWPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="themaSubject" type="codelistSearch" indexed="true" stored="true" multiValued="false" required="false" /> <!-- Thema Subject Index (TS) -->
+        <field name="TSPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="themaQualifier" type="codelistSearch" indexed="true" stored="true" multiValued="false" required="false" /> <!-- Thema Qualifier Index (TQ) -->
+        <field name="TQPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="language" type="codelistSearch" indexed="true" stored="true" multiValued="false" required="false" /> <!-- Language Index (LA|SP) -->
+        <field name="LAPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <!-- Some indices do need to have a linkvalue (meaning, what should be searched for in the VLX core) -->
+        <field name="linkValue" type="string" indexed="false" stored="true" multiValued="false" required="false" />
+
+        <!-- The counter of the field, in how much titles is this field contained (calculated during initialization using a Bag) -->
+        <field name="counter" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
+
+        <field name="indexDate" type="pdate" indexed="true" stored="true" required="false" multiValued="false" />
+
+      </fields>
+
+	<!-- field to use to determine and enforce document uniqueness. -->
+	<uniqueKey>id</uniqueKey>
+</schema>

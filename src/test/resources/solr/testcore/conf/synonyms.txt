@@ -1,0 +1,2 @@
+Suhrkamp => publisher
+Verlag => publisherMarker

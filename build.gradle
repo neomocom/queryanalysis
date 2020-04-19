@@ -16,8 +16,8 @@ apply plugin: 'java'
 
 javadoc.failOnError = false
 
-sourceCompatibility = JavaVersion.VERSION_12
-targetCompatibility = JavaVersion.VERSION_12
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 version = 1.0
 
@@ -32,6 +32,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
     implementation "org.apache.solr:solr-core:$luceneVersion"
     implementation "org.slf4j:slf4j-api:$slf4jVersion"
+    implementation "org.slf4j:slf4j-ext:$slf4jVersion"
     implementation "org.apache.lucene:lucene-core:$luceneVersion"
     implementation "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
 }

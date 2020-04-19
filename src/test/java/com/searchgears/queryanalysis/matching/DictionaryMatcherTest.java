@@ -1,6 +1,5 @@
-package matching;
+package com.searchgears.queryanalysis.matching;
 
-import com.searchgears.queryanalysis.matching.DictionaryMatcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

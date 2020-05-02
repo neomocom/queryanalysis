@@ -1,2 +1,2 @@
-Suhrkamp => publisher
-Verlag => publisherMarker
+suhrkamp => publisher
+verlag => publisherMarker

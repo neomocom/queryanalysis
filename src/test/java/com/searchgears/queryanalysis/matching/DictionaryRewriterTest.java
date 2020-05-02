@@ -1,36 +1,25 @@
 package com.searchgears.queryanalysis.matching;
 
-import com.carrotsearch.randomizedtesting.RandomizedRunner;
-import com.searchgears.queryanalysis.component.SolrResources;
-import org.apache.solr.SolrTestCaseJ4;
-import org.junit.Test;
+import com.searchgears.queryanalysis.SolrCoreAwareTest;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
+import org.junit.Test;
 
 import java.io.IOException;
 
-@RunWith(RandomizedRunner.class)
-public class DictionaryRewriterTest extends SolrTestCaseJ4 {
+
+public class DictionaryRewriterTest extends SolrCoreAwareTest {
     private DictionaryRewriter rewriter;
-    private static String CORE_NAME = "testcore";
 
-
-    @BeforeClass
-    public static void initSolr() throws Exception {
-        initCore(SolrResources.getPathToCoreConfig(CORE_NAME), SolrResources.getPathToCoreSchema(CORE_NAME),
-                SolrResources.getPathToSolrCores(), CORE_NAME);
-    }
 
     @Before
     public void initalizeRewriter() throws IOException {
         rewriter = new DictionaryRewriter("synonyms.txt");
-        rewriter.inform(h.getCore().getResourceLoader());
+        rewriter.inform(getResourceLoader());
     }
 
     @Test
     public void nonMatchingTextIsReturnedAsIs() {
-        assertEquals("I don't match.", rewriter.rewrite("I don't match."));
+        assertEquals("i don t match", rewriter.rewrite("I don't match."));
     }
 
     @Test
@@ -38,4 +27,15 @@ public class DictionaryRewriterTest extends SolrTestCaseJ4 {
         assertEquals("publisher publisherMarker", rewriter.rewrite("Suhrkamp Verlag"));
     }
 
+    @Test
+    public void textContainingMatchIsPartiallyRewritten() {
+        assertEquals("this is returned as is publisher publisherMarker so is this",
+                rewriter.rewrite("this is returned as is, Suhrkamp Verlag so is this"));
+    }
+
+    @Test
+    public void caseIsIgnored() {
+        assertEquals("publisher publisherMarker",
+                rewriter.rewrite("sUhrkamp VERLAG"));
+    }
 }

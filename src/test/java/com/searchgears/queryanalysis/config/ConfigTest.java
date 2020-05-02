@@ -25,7 +25,7 @@ public class ConfigTest {
     public void rulesMatchersAreReadCorrectly() {
         assertTrue(rules.size() == 1);
         Rule rule = rules.get(0);
-        assertArrayEquals(new String[]{"publisher", "publisher_marker"}, rule.getMatchers().toArray());
+        assertArrayEquals(new String[]{"publisher", "publisherMarker"}, rule.getMatchers().toArray());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ConfigTest {
     @Test
     public void matchersAreReadCorrectly() {
         assertTrue(matchers.size() == 2);
-        assertEquals(Set.of("publisher", "publisher_marker"), matchers.keySet());
+        assertEquals(Set.of("publisher", "publisherMarker"), matchers.keySet());
     }
 
     @Test

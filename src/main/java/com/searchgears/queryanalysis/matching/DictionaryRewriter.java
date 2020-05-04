@@ -1,6 +1,7 @@
 package com.searchgears.queryanalysis.matching;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
@@ -26,7 +27,9 @@ public class DictionaryRewriter implements ResourceLoaderAware {
 
     DictionaryRewriter(String synFile) {
         //Case needs to be respected in order to keep the output intact, will be handled "outside"
-        Map<String, String> args = Maps.newHashMap(Map.of("ignoreCase", "false", "synonyms", synFile));
+        Map<String, String> args = Maps.newHashMap();
+        args.put("ignoreCase", "false");
+        args.put("synonyms", synFile);
         synonymGraphFilterFactory = new SynonymGraphFilterFactory(args);
     }
 

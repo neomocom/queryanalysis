@@ -28,6 +28,10 @@ dependencies {
     testImplementation "org.slf4j:slf4j-jdk14:$slf4jVersion"
     testImplementation "org.apache.lucene:lucene-test-framework:$luceneVersion"
     testImplementation "org.apache.solr:solr-test-framework:$luceneVersion"
+    testRuntimeOnly(
+            "org.junit.jupiter:junit-jupiter-engine:$junitVersion",
+            "org.junit.vintage:junit-vintage-engine:$junitVersion"
+    )
 
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
     implementation "org.apache.solr:solr-core:$luceneVersion"

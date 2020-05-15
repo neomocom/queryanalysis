@@ -1,11 +1,11 @@
 package com.searchgears.queryanalysis.config;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,7 +39,7 @@ public class ConfigTest {
     @Test
     public void matchersAreReadCorrectly() {
         assertTrue(matchers.size() == 2);
-        assertEquals(Set.of("publisher", "publisherMarker"), matchers.keySet());
+        assertEquals(ImmutableSet.of("publisher", "publisherMarker"), matchers.keySet());
     }
 
     @Test

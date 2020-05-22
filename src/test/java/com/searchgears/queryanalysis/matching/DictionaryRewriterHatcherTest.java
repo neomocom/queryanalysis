@@ -1,5 +1,7 @@
 package com.searchgears.queryanalysis.matching;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.searchgears.queryanalysis.SolrCoreAwareTest;
 import com.searchgears.queryanalysis.config.Config;
 import com.searchgears.queryanalysis.config.Matcher;
@@ -33,11 +35,11 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
     public void synonymFileIsCreatedForAllMatchers() throws IOException {
         Path outputFile = createTempOutputFile();
         hatcher.createSynFileFromMatchers(config.getMatchers(), outputFile);
-        Set<String> expected = Set.of(
+        Set<String> expected = ImmutableSet.of(
                 "Verlag GmbH => publisherMarker", "e. V. => publisherMarker",
                 "Peter Suhrkamp => publisher", "Beck => publisher", "Hänssler => publisher"
         );
-        Set<String> actual = Set.copyOf(Files.readAllLines(outputFile));
+        Set<String> actual = ImmutableSet.copyOf(Files.readAllLines(outputFile));
         assertEquals(expected, actual);
     }
 
@@ -46,7 +48,7 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
         String invalidDictionary = "invalidDictionary.dic";
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(containsString(invalidDictionary));
-        Map<String, Matcher> matchers = Map.of("publisher", new Matcher(invalidDictionary));
+        Map<String, Matcher> matchers = ImmutableMap.of("publisher", new Matcher(invalidDictionary));
         hatcher.createSynFileFromMatchers(matchers, createTempOutputFile());
     }
 
@@ -62,8 +64,7 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
     private Config parseConfig(String fileName) {
         String file = ClassLoader.getSystemClassLoader()
                 .getResource(fileName).getFile();
-        Config config = Config.fromFile(file);
-        return config;
+        return Config.fromFile(file);
     }
 
     private Path createTempOutputFile() {

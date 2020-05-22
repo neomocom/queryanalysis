@@ -52,4 +52,5 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
+    systemProperty "test.solr.allowed.securerandom", "NativePRNG"
 }

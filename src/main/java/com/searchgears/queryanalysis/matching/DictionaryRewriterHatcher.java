@@ -23,60 +23,57 @@ import java.util.Map;
  * TODO rename to DictionaryRewriterHolder
  */
 public class DictionaryRewriterHatcher implements ResourceLoaderAware {
-    private static final String DEFAULT_SYN_FILENAME = "synonyms.txt";
 
     private final String configFilename;
-    private final String synFilename;
 
-    private DictionaryRewriter rewriter = null;
+    private Path synFilepath;
+    private DictionaryRewriter rewriter;
     private ResourceLoader loader;
 
     public DictionaryRewriterHatcher(String configFilename) {
-        this(configFilename, DEFAULT_SYN_FILENAME);
-    }
-
-    public DictionaryRewriterHatcher(String configFilename, String synFilename) {
         this.configFilename = configFilename;
-        this.synFilename = synFilename;
     }
 
     @Override
     public void inform(ResourceLoader loader) throws IOException {
         this.loader = loader;
-        Path synFilepath = resolvePathToSynonymsFile();
-        createSynFileForRewriter(synFilepath);
+        createTempSynFile();
+        writeSynFileForRewriter();
         createDictionaryRewriter();
 
         // TODO delete synFile after rewriter init
-        //deleteDictionaryRewriterInputFile();
+        //deleteTempSynFile();
     }
 
-    private Path resolvePathToSynonymsFile() {
+    private void createTempSynFile() throws IOException {
         if (loader instanceof SolrResourceLoader) {
             SolrResourceLoader solrResourceLoader = ((SolrResourceLoader) loader);
-            return solrResourceLoader.getInstancePath().resolve("conf").resolve(synFilename);
+            this.synFilepath = Files.createTempFile(solrResourceLoader.getInstancePath().resolve("conf"), "synonyms-", ".txt");
         } else {
             throw new IllegalStateException("Solr resource loader is required to resolve path to solr core config dir");
         }
     }
 
-    private void createSynFileForRewriter(Path synFilepath) {
+    private void writeSynFileForRewriter() {
+        Config config = loadConfig();
+        writeSynFileFromMatchers(config.getMatchers());
+    }
+
+    private Config loadConfig() {
         try (InputStream inputStream = loader.openResource(configFilename)) {
-            Config config = Config.fromInputStream(inputStream);
-            createSynFileFromMatchers(config.getMatchers(), synFilepath);
+            return Config.fromInputStream(inputStream);
         } catch (IOException e) {
             throw new IllegalArgumentException("Config file could not be loaded");
         }
     }
 
-    @VisibleForTesting
-    void createSynFileFromMatchers(Map<String, Matcher> matchers, Path outputFile) {
-        try (BufferedWriter output = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8)) {
+    private void writeSynFileFromMatchers(Map<String, Matcher> matchers) {
+        try (BufferedWriter output = Files.newBufferedWriter(synFilepath, StandardCharsets.UTF_8)) {
             for (Map.Entry<String, Matcher> matcher : matchers.entrySet()) {
                 writeDictionaryContents(matcher.getValue().getDictionary(), matcher.getKey(), output);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Could not write to output file " + outputFile + ". ");
+            throw new IllegalStateException("Could not write to output file " + synFilepath + ". ");
         }
     }
 
@@ -94,7 +91,7 @@ public class DictionaryRewriterHatcher implements ResourceLoaderAware {
     }
 
     private void createDictionaryRewriter() throws IOException {
-        this.rewriter = new DictionaryRewriter(synFilename);
+        this.rewriter = new DictionaryRewriter(synFilepath.getFileName().toString());
         this.rewriter.inform(loader);
     }
 
@@ -103,6 +100,12 @@ public class DictionaryRewriterHatcher implements ResourceLoaderAware {
             throw new UnsupportedOperationException("DictionaryRewriter is only available after ResourceLoaderAware#inform");
         }
         return rewriter;
+    }
+
+
+    @VisibleForTesting
+    Path getSynFilepath() {
+        return synFilepath;
     }
 
 }

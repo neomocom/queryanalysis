@@ -13,7 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.*;
 
 public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
     @Rule
@@ -32,14 +32,15 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
     }
 
     @Test
-    public void synFileNameCanBeCustomized() throws IOException {
-        String synFilename = "custom-synonyms.txt";
-        new DictionaryRewriterHatcher("queryanalysis.yml", synFilename).inform(getResourceLoader());
-        assertTrue(resolveSynFilepath(synFilename).toFile().exists());
+    public void synFileNameIsSound() throws IOException {
+        hatcher.inform(getResourceLoader());
+        String synFilename = resolveSynFilepath().getFileName().toString();
+        assertThat(synFilename, startsWith("synonyms"));
+        assertThat(synFilename, endsWith(".txt"));
     }
 
     @Test
-    public void synonymFileIsCreatedForAllMatcherDictionaries() throws IOException {
+    public void synonymFileContentIsCreatedForAllMatcherDictionaries() throws IOException {
         hatcher.inform(getResourceLoader());
         Set<String> expected = ImmutableSet.of(
                 "Verlag GmbH => publisherMarker", "e. V. => publisherMarker",
@@ -54,13 +55,6 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(containsString("invalidDictionary.dic"));
         new DictionaryRewriterHatcher("queryanalysis-invalid-dic.yml").inform(getResourceLoader());
-    }
-
-    @Test
-    public void nonWritableOutputFileThrowsException() {
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage(containsString("Could not write to output file"));
-        hatcher.createSynFileFromMatchers(ImmutableMap.of(), createReadOnlyOutputFile());
     }
 
     @Test
@@ -83,27 +77,8 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
         assertNotNull(hatcher.getRewriter());
     }
 
-    private Path createTempOutputFile() {
-        try {
-            Path outputFile = Files.createTempFile(null, null);
-            outputFile.toFile().deleteOnExit();
-            return outputFile;
-        } catch (IOException exception) {
-            throw new IllegalStateException(exception);
-        }
-    }
-
-    private Path createReadOnlyOutputFile() {
-        Path outputFile = createTempOutputFile();
-        outputFile.toFile().setReadOnly();
-        return outputFile;
-    }
-
     private Path resolveSynFilepath() {
-        return resolveSynFilepath("synonyms.txt");
+        return hatcher.getSynFilepath();
     }
 
-    private Path resolveSynFilepath(String synFilename) {
-        return getResourceLoader().getInstancePath().resolve("conf").resolve(synFilename);
-    }
 }

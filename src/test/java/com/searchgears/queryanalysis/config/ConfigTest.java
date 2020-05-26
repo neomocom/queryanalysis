@@ -16,7 +16,7 @@ public class ConfigTest {
 
     @BeforeEach
     public void readConfig() {
-        config = parseConfig("queryanalysis.yml");
+        config = parseConfig("solr/testcore/conf/queryanalysis.yml");
         rules = config.getRules();
         matchers = config.getMatchers();
     }
@@ -49,26 +49,18 @@ public class ConfigTest {
 
     @Test
     public void matcherWithoutDefinitionThrows() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            parseConfig("queryanalysis-invalid.yml");
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> parseConfig("solr/testcore/conf/queryanalysis-invalid-matcher.yml"));
         assertEquals("No definition for matcher foobasel. ", exception.getMessage());
     }
 
     @Test
     public void nonExistingConfigFileThrows() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            Config.fromFile("non-existing");
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> Config.fromFile("non-existing"));
         assertEquals("Error reading file \"non-existing\". ", exception.getMessage());
     }
 
-
-    private Config parseConfig(String fileName) {
-        String file = ClassLoader.getSystemClassLoader()
-                .getResource(fileName).getFile();
-        Config config = Config.fromFile(file);
-        return config;
+    private Config parseConfig(String path) {
+        return Config.fromClasspath(path);
     }
 
 }

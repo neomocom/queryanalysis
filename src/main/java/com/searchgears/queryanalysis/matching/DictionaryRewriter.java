@@ -1,16 +1,10 @@
 package com.searchgears.queryanalysis.matching;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.synonym.SynonymGraphFilterFactory;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.util.ResourceLoader;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 
@@ -43,22 +37,8 @@ public class DictionaryRewriter {
         }
     }
 
-    public String rewrite(String s) {
-        TokenStream tokenStream = synonymGraphFilterFactory.create(new SimpleAnalyzer().tokenStream("", s));
-        CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-        List<String> terms = new ArrayList<>();
-
-        try {
-            tokenStream.reset();
-            while (tokenStream.incrementToken()) {
-                terms.add(charTermAttribute.toString());
-            }
-            tokenStream.end();
-            tokenStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return s;
-        }
-        return Joiner.on(' ').join(terms);
+    public String rewrite(String query) {
+        return TokenStreamProcessor.process(query, synonymGraphFilterFactory::create);
     }
+
 }

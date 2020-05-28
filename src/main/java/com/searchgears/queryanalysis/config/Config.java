@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.apache.lucene.analysis.util.ResourceLoader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -15,6 +15,14 @@ public class Config {
     private Map<String, Matcher> matchers;
 
 
+    public static Config fromCorePath(ResourceLoader resourceLoader, String filename) {
+        try (InputStream inputStream = resourceLoader.openResource(filename)) {
+            return Config.fromInputStream(inputStream);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Error reading file \"" + filename + "\". ");
+        }
+    }
+
     public static Config fromClasspath(String name) {
         return fromInputStream(ClassLoader.getSystemClassLoader().getResourceAsStream(name));
     }
@@ -23,18 +31,7 @@ public class Config {
         try {
             return getObjectMapper().readValue(inputStream, Config.class).validate();
         } catch (IOException e) {
-            throw new IllegalArgumentException("Error reading config from input stream.");
-        }
-    }
-
-    /*
-        TODO: Convert to use Path
-     */
-    public static Config fromFile(String fileName) {
-        try {
-            return getObjectMapper().readValue(new File(fileName), Config.class).validate();
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Error reading file \"" + fileName + "\". ");
+            throw new IllegalArgumentException("Error reading config from input stream.", e);
         }
     }
 

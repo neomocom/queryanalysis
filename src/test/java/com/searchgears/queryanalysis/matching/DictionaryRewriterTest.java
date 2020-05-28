@@ -15,7 +15,7 @@ public class DictionaryRewriterTest extends SolrCoreAwareTest {
 
     @Test
     public void nonMatchingTextIsReturnedAsIs() {
-        assertEquals("i don t match", rewriter.rewrite("I don't match."));
+        assertEquals("i don't match", rewriter.rewrite("I don't match."));
     }
 
     @Test
@@ -33,5 +33,10 @@ public class DictionaryRewriterTest extends SolrCoreAwareTest {
     public void caseIsIgnored() {
         assertEquals("publisher publisherMarker",
             rewriter.rewrite("sUhrkamp VERLAG"));
+    }
+
+    @Test
+    public void queryIsTokenizedAndMatches() {
+        assertEquals("publisher", rewriter.rewrite("    Suhrkamp   "));
     }
 }

@@ -1,6 +1,7 @@
 package com.searchgears.queryanalysis.config;
 
 import com.google.common.collect.ImmutableSet;
+import org.apache.lucene.analysis.util.ClasspathResourceLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +56,7 @@ public class ConfigTest {
 
     @Test
     public void nonExistingConfigFileThrows() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> Config.fromFile("non-existing"));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> Config.fromCorePath(new ClasspathResourceLoader(this.getClass()), "non-existing"));
         assertEquals("Error reading file \"non-existing\". ", exception.getMessage());
     }
 

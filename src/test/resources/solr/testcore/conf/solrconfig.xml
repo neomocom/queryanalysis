@@ -753,6 +753,9 @@
       <!-- Format of response -->
 			<str name="wt">json</str>
 		</lst>
+      <arr name="first-components">
+          <str>queryAnalyzer</str>
+      </arr>
 	</requestHandler>
 
 
@@ -811,6 +814,9 @@
        always be executed after the "last-components"
 
      -->
+  <searchComponent name="queryAnalyzer" class="com.searchgears.queryanalysis.component.QueryAnalysisComponent">
+      <str name="configFile">queryanalysis-integration-test.yml</str>
+  </searchComponent>
 
   <!-- Term Vector Component
 

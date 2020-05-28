@@ -2,6 +2,7 @@ package com.searchgears.queryanalysis.matching;
 
 import com.google.common.collect.ImmutableSet;
 import com.searchgears.queryanalysis.SolrCoreAwareTest;
+import com.searchgears.queryanalysis.config.Config;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,7 +22,8 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
 
     @Before
     public void setUpTestSubject() {
-        hatcher = new DictionaryRewriterHatcher("queryanalysis.yml", getResourceLoader());
+        Config config = Config.fromCorePath(getResourceLoader(), "queryanalysis.yml");
+        hatcher = new DictionaryRewriterHatcher(config.getMatchers(), getResourceLoader());
     }
 
     @Test
@@ -39,8 +41,8 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
     @Test
     public void synFileContentIsCreatedForAllMatcherDictionaries() throws IOException {
         Set<String> expected = ImmutableSet.of(
-                "Verlag GmbH => publisherMarker", "e. V. => publisherMarker",
-                "Peter Suhrkamp => publisher", "Beck => publisher", "Hänssler => publisher"
+            "peter suhrkamp => publisher", "beck => publisher", "hänssler => publisher",
+            "verlag gmbh => publisherMarker", "e v => publisherMarker"
         );
         Set<String> actual = ImmutableSet.copyOf(Files.readAllLines(resolveSynFilepath()));
         assertEquals(expected, actual);
@@ -50,14 +52,8 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
     public void illegalDictionaryThrowsException() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(containsString("invalidDictionary.dic"));
-        new DictionaryRewriterHatcher("queryanalysis-invalid-dic.yml", getResourceLoader());
-    }
-
-    @Test
-    public void invalidConfigFileLocationThrowsException() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage(containsString("Config file could not be loaded"));
-        new DictionaryRewriterHatcher("invalid-location", getResourceLoader());
+        Config invalidConfig = Config.fromCorePath(getResourceLoader(), "queryanalysis-invalid-dic.yml");
+        new DictionaryRewriterHatcher(invalidConfig.getMatchers(), getResourceLoader());
     }
 
     @Test

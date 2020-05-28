@@ -25,7 +25,7 @@ apply plugin: 'maven-publish'
 
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
-    testImplementation "org.slf4j:slf4j-jdk14:$slf4jVersion"
+    testImplementation "org.assertj:assertj-core:$assertJVersion"
     testImplementation "org.apache.lucene:lucene-test-framework:$luceneVersion"
     testImplementation "org.apache.solr:solr-test-framework:$luceneVersion"
     testRuntimeOnly(

@@ -3,9 +3,6 @@ package com.searchgears.queryanalysis.rule;
 import com.google.common.base.Splitter;
 import com.searchgears.queryanalysis.config.Rule;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
 
 import java.util.List;
 import java.util.Optional;

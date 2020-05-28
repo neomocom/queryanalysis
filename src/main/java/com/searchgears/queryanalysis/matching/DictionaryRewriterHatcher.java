@@ -3,8 +3,6 @@ package com.searchgears.queryanalysis.matching;
 import com.google.common.annotations.VisibleForTesting;
 import com.searchgears.queryanalysis.config.Config;
 import com.searchgears.queryanalysis.config.Matcher;
-import org.apache.lucene.analysis.util.ResourceLoader;
-import org.apache.lucene.analysis.util.ResourceLoaderAware;
 import org.apache.solr.core.SolrResourceLoader;
 
 import java.io.*;
@@ -22,35 +20,33 @@ import java.util.Map;
  * create the DictionaryRewriter.
  * TODO rename to DictionaryRewriterHolder
  */
-public class DictionaryRewriterHatcher implements ResourceLoaderAware {
+public class DictionaryRewriterHatcher {
 
     private final String configFilename;
 
     private Path synFilepath;
     private DictionaryRewriter rewriter;
-    private ResourceLoader loader;
+    private SolrResourceLoader loader;
 
-    public DictionaryRewriterHatcher(String configFilename) {
+    public DictionaryRewriterHatcher(String configFilename, SolrResourceLoader loader) {
         this.configFilename = configFilename;
+        this.loader = loader;
+        init();
     }
 
-    @Override
-    public void inform(ResourceLoader loader) throws IOException {
-        this.loader = loader;
+    private void init() {
         createTempSynFile();
         writeSynFileForRewriter();
         createDictionaryRewriter();
-
         // TODO delete synFile after rewriter init
         //deleteTempSynFile();
     }
 
-    private void createTempSynFile() throws IOException {
-        if (loader instanceof SolrResourceLoader) {
-            SolrResourceLoader solrResourceLoader = ((SolrResourceLoader) loader);
-            this.synFilepath = Files.createTempFile(solrResourceLoader.getInstancePath().resolve("conf"), "synonyms-", ".txt");
-        } else {
-            throw new IllegalStateException("Solr resource loader is required to resolve path to solr core config dir");
+    private void createTempSynFile() {
+        try {
+            this.synFilepath = Files.createTempFile(loader.getInstancePath().resolve("conf"), "synonyms-", ".txt");
+        } catch (IOException e) {
+            throw new IllegalStateException("Temporary synonyms file could not be created", e);
         }
     }
 
@@ -90,9 +86,8 @@ public class DictionaryRewriterHatcher implements ResourceLoaderAware {
         }
     }
 
-    private void createDictionaryRewriter() throws IOException {
-        this.rewriter = new DictionaryRewriter(synFilepath.getFileName().toString());
-        this.rewriter.inform(loader);
+    private void createDictionaryRewriter() {
+        this.rewriter = new DictionaryRewriter(synFilepath.getFileName().toString(), loader);
     }
 
     public DictionaryRewriter getRewriter() {

@@ -1,15 +1,12 @@
 package com.searchgears.queryanalysis.matching;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.synonym.SynonymGraphFilterFactory;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.util.ResourceLoader;
-import org.apache.lucene.analysis.util.ResourceLoaderAware;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,15 +19,28 @@ import java.util.Map;
  * after applying tokenization and lowercasing.
  * It returns the normalized input text with all matching tokens replaced.
  */
-public class DictionaryRewriter implements ResourceLoaderAware {
+public class DictionaryRewriter {
     private final SynonymGraphFilterFactory synonymGraphFilterFactory;
 
-    DictionaryRewriter(String synFile) {
+    DictionaryRewriter(String synFile, ResourceLoader resourceLoader) {
+        synonymGraphFilterFactory = new SynonymGraphFilterFactory(getSynonymGraphSettings(synFile));
+        informSynonymGraphFilterFactory(resourceLoader);
+    }
+
+    private Map<String, String> getSynonymGraphSettings(String synFile) {
         //Case needs to be respected in order to keep the output intact, will be handled "outside"
         Map<String, String> args = Maps.newHashMap();
         args.put("ignoreCase", "false");
         args.put("synonyms", synFile);
-        synonymGraphFilterFactory = new SynonymGraphFilterFactory(args);
+        return args;
+    }
+
+    private void informSynonymGraphFilterFactory(ResourceLoader resourceLoader) {
+        try {
+            synonymGraphFilterFactory.inform(resourceLoader);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to initialize synonymGraphFilterFactory", e);
+        }
     }
 
     public String rewrite(String s) {
@@ -50,10 +60,5 @@ public class DictionaryRewriter implements ResourceLoaderAware {
             return s;
         }
         return Joiner.on(' ').join(terms);
-    }
-
-    @Override
-    public void inform(ResourceLoader loader) throws IOException {
-        synonymGraphFilterFactory.inform(loader);
     }
 }

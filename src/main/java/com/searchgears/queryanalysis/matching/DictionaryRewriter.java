@@ -24,7 +24,7 @@ public class DictionaryRewriter {
 
     DictionaryRewriter(String synFile, ResourceLoader resourceLoader) {
         synonymGraphFilterFactory = new SynonymGraphFilterFactory(getSynonymGraphSettings(synFile));
-        initSynonymGraphFilter(resourceLoader);
+        informSynonymGraphFilterFactory(resourceLoader);
     }
 
     private Map<String, String> getSynonymGraphSettings(String synFile) {
@@ -35,7 +35,7 @@ public class DictionaryRewriter {
         return args;
     }
 
-    private void initSynonymGraphFilter(ResourceLoader resourceLoader) {
+    private void informSynonymGraphFilterFactory(ResourceLoader resourceLoader) {
         try {
             synonymGraphFilterFactory.inform(resourceLoader);
         } catch (IOException e) {

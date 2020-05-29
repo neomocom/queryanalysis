@@ -15,15 +15,15 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 
-public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
+public class DictionaryRewriterHolderTest extends SolrCoreAwareTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
-    private DictionaryRewriterHatcher hatcher;
+    private DictionaryRewriterHolder holder;
 
     @Before
     public void setUpTestSubject() {
         Config config = Config.fromCorePath(getResourceLoader(), "queryanalysis.yml");
-        hatcher = new DictionaryRewriterHatcher(config.getMatchers(), getResourceLoader());
+        holder = new DictionaryRewriterHolder(config.getMatchers(), getResourceLoader());
     }
 
     @Test
@@ -53,16 +53,16 @@ public class DictionaryRewriterHatcherTest extends SolrCoreAwareTest {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(containsString("invalidDictionary.dic"));
         Config invalidConfig = Config.fromCorePath(getResourceLoader(), "queryanalysis-invalid-dic.yml");
-        new DictionaryRewriterHatcher(invalidConfig.getMatchers(), getResourceLoader());
+        new DictionaryRewriterHolder(invalidConfig.getMatchers(), getResourceLoader());
     }
 
     @Test
     public void instanceOfRewriterIsCreated() {
-        assertNotNull(hatcher.getRewriter());
+        assertNotNull(holder.getRewriter());
     }
 
     private Path resolveSynFilepath() {
-        return hatcher.getSynFilepath();
+        return holder.getSynFilepath();
     }
 
 }

@@ -51,7 +51,7 @@ public class QueryAnalysisComponent extends QueryComponent implements SolrCoreAw
     public void prepare(ResponseBuilder rb) throws IOException {
         SolrParams params = getSolrParams(rb);
         if (isExtendedDisMaxQuery(params) && analyzeQueryEnabled(params)) {
-            analyseQuery(rb);
+            analyzeQuery(rb);
         } else {
             LOGGER.debug("No edismax query or 'qa'-Parameter not set, not touching query \"{}\".", rb.getQueryString());
         }
@@ -71,8 +71,8 @@ public class QueryAnalysisComponent extends QueryComponent implements SolrCoreAw
         return params.getBool("qa", false);
     }
 
-    private void analyseQuery(ResponseBuilder rb) {
-        profile("Analyse Query", profiler -> {
+    private void analyzeQuery(ResponseBuilder rb) {
+        profile("Analyze Query", profiler -> {
             profiler.start("Rewrite Query");
             String ruleQuery = rewriteToRuleQuery(rb);
 

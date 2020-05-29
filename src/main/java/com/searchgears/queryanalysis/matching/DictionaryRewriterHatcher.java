@@ -1,7 +1,6 @@
 package com.searchgears.queryanalysis.matching;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.searchgears.queryanalysis.config.Config;
 import com.searchgears.queryanalysis.config.Matcher;
 import org.apache.solr.core.SolrResourceLoader;
 
@@ -22,21 +21,21 @@ import java.util.Map;
  */
 public class DictionaryRewriterHatcher {
 
-    private final String configFilename;
+    private final Map<String, Matcher> matchers;
 
     private Path synFilepath;
     private DictionaryRewriter rewriter;
     private SolrResourceLoader loader;
 
-    public DictionaryRewriterHatcher(String configFilename, SolrResourceLoader loader) {
-        this.configFilename = configFilename;
-        this.loader = loader;
+    public DictionaryRewriterHatcher(Map<String, Matcher> matchers, SolrResourceLoader resourceLoader) {
+        this.matchers = matchers;
+        this.loader = resourceLoader;
         init();
     }
 
     private void init() {
         createTempSynFile();
-        writeSynFileForRewriter();
+        writeSynFileFromMatcherDictionaries();
         createDictionaryRewriter();
         // TODO delete synFile after rewriter init
         //deleteTempSynFile();
@@ -50,20 +49,7 @@ public class DictionaryRewriterHatcher {
         }
     }
 
-    private void writeSynFileForRewriter() {
-        Config config = loadConfig();
-        writeSynFileFromMatchers(config.getMatchers());
-    }
-
-    private Config loadConfig() {
-        try (InputStream inputStream = loader.openResource(configFilename)) {
-            return Config.fromInputStream(inputStream);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Config file could not be loaded");
-        }
-    }
-
-    private void writeSynFileFromMatchers(Map<String, Matcher> matchers) {
+    private void writeSynFileFromMatcherDictionaries() {
         try (BufferedWriter output = Files.newBufferedWriter(synFilepath, StandardCharsets.UTF_8)) {
             for (Map.Entry<String, Matcher> matcher : matchers.entrySet()) {
                 writeDictionaryContents(matcher.getValue().getDictionary(), matcher.getKey(), output);
@@ -78,7 +64,7 @@ public class DictionaryRewriterHatcher {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
-                output.write(line + " => " + matcherRule);
+                output.write(TokenStreamProcessor.process(line) + " => " + matcherRule);
                 output.newLine();
             }
         } catch (IOException e) {

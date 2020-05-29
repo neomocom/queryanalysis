@@ -4,7 +4,7 @@
 		Important! Every field must be set to stored="true" to enable update functionality!
 	 -->
 	<types>
-		<fieldType name="pdate" class="solr.DatePointField" docValues="true" /> 
+		<fieldType name="pdate" class="solr.DatePointField" docValues="true" />
 		<fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true" />
     <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
     <fieldType name="pint" class="solr.IntPointField" docValues="true" sortMissingLast="true"/>
@@ -13,7 +13,7 @@
             <analyzer>
                 <tokenizer class="solr.KeywordTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory" />
-                <filter class="solr.GermanNormalizationFilterFactory" />                
+                <filter class="solr.GermanNormalizationFilterFactory" />
             </analyzer>
         </fieldType>
 
@@ -37,10 +37,11 @@
 	<fields>
 		<field name="_version_" type="plong" indexed="true" stored="true" multiValued="false" /> <!-- Solr necessity for optimistic locking -->
         <field name="text" type="text" indexed="true" stored="false" multiValued="true"/>
-        
+
         <!-- general -->
         <field name="id" type="string" indexed="true" stored="true" multiValued="false" required="true" />
 
+        <field name="authors" type="text" indexed="true" stored="true"  multiValued="true" required="false" />
         <field name="author" type="text" indexed="true" stored="true" multiValued="false" required="false" /> <!-- The Author Index (AU) -->
         <field name="AUPos" type="pint" indexed="true" stored="true" multiValued="false" required="false" />
 

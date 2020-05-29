@@ -1,0 +1,16 @@
+rules:
+  - matchers:
+      - author
+    params:
+      qf: authors^1000
+
+  - matchers:
+      - title
+    params:
+      qf: title^1000
+
+matchers:
+  author:
+    dictionary: author.dic
+  title:
+    dictionary: title.dic

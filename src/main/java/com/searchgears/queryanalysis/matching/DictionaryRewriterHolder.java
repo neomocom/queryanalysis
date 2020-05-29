@@ -3,6 +3,8 @@ package com.searchgears.queryanalysis.matching;
 import com.google.common.annotations.VisibleForTesting;
 import com.searchgears.queryanalysis.config.Matcher;
 import org.apache.solr.core.SolrResourceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -19,25 +21,32 @@ import java.util.Map;
  * create the DictionaryRewriter.
  */
 public class DictionaryRewriterHolder {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryRewriterHolder.class);
     private final Map<String, Matcher> matchers;
 
     private Path synFilepath;
     private DictionaryRewriter rewriter;
     private SolrResourceLoader loader;
+    private boolean deleteSynFile;
 
     public DictionaryRewriterHolder(Map<String, Matcher> matchers, SolrResourceLoader resourceLoader) {
+        this(matchers, resourceLoader, true);
+
+    }
+
+    public DictionaryRewriterHolder(Map<String, Matcher> matchers, SolrResourceLoader resourceLoader, boolean deleteSynFile) {
         this.matchers = matchers;
         this.loader = resourceLoader;
+        this.deleteSynFile = deleteSynFile;
         init();
     }
+
 
     private void init() {
         createTempSynFile();
         writeSynFileFromMatcherDictionaries();
         createDictionaryRewriter();
-        // TODO delete synFile after rewriter init
-        //deleteTempSynFile();
+        deleteTempSynFile();
     }
 
     private void createTempSynFile() {
@@ -73,6 +82,16 @@ public class DictionaryRewriterHolder {
 
     private void createDictionaryRewriter() {
         this.rewriter = new DictionaryRewriter(synFilepath.getFileName().toString(), loader);
+    }
+
+    private void deleteTempSynFile() {
+        if (deleteSynFile) {
+            try {
+                Files.delete(synFilepath);
+            } catch (IOException e) {
+                LOGGER.error("unable to delete temp synonyms file", e);
+            }
+        }
     }
 
     public DictionaryRewriter getRewriter() {

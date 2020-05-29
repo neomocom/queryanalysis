@@ -3,6 +3,7 @@ package com.searchgears.queryanalysis.matching;
 import com.google.common.collect.ImmutableSet;
 import com.searchgears.queryanalysis.SolrCoreAwareTest;
 import com.searchgears.queryanalysis.config.Config;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +24,12 @@ public class DictionaryRewriterHolderTest extends SolrCoreAwareTest {
     @Before
     public void setUpTestSubject() {
         Config config = Config.fromCorePath(getResourceLoader(), "queryanalysis.yml");
-        holder = new DictionaryRewriterHolder(config.getMatchers(), getResourceLoader());
+        holder = new DictionaryRewriterHolder(config.getMatchers(), getResourceLoader(), false);
+    }
+
+    @After
+    public void deleteTempSynFile() throws IOException {
+        Files.delete(resolveSynFilepath());
     }
 
     @Test

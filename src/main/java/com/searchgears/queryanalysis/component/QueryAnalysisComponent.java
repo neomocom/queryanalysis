@@ -2,7 +2,7 @@ package com.searchgears.queryanalysis.component;
 
 import com.searchgears.queryanalysis.config.Config;
 import com.searchgears.queryanalysis.config.Rule;
-import com.searchgears.queryanalysis.matching.DictionaryRewriterHatcher;
+import com.searchgears.queryanalysis.matching.DictionaryRewriterHolder;
 import com.searchgears.queryanalysis.rule.RankingRuleMatcher;
 import com.searchgears.queryanalysis.rule.SimpleRankingRuleMatcher;
 import org.apache.solr.common.params.CommonParams;
@@ -29,7 +29,7 @@ public class QueryAnalysisComponent extends QueryComponent implements SolrCoreAw
     public static final String HEADER_NAME = "query_analysis";
 
     private String configFileName;
-    private DictionaryRewriterHatcher dictionaryRewriterHatcher;
+    private DictionaryRewriterHolder dictionaryRewriterHolder;
     private RankingRuleMatcher rankingRuleMatcher;
 
     @Override
@@ -42,7 +42,7 @@ public class QueryAnalysisComponent extends QueryComponent implements SolrCoreAw
     public void inform(SolrCore core) {
         profile("Initialization", profiler -> {
             Config config = Config.fromCorePath(core.getResourceLoader(), configFileName);
-            dictionaryRewriterHatcher = new DictionaryRewriterHatcher(config.getMatchers(), core.getResourceLoader());
+            dictionaryRewriterHolder = new DictionaryRewriterHolder(config.getMatchers(), core.getResourceLoader());
             rankingRuleMatcher = new SimpleRankingRuleMatcher(config.getRules());
         });
     }
@@ -91,7 +91,7 @@ public class QueryAnalysisComponent extends QueryComponent implements SolrCoreAw
     private String rewriteToRuleQuery(ResponseBuilder rb) {
         String query = getSolrParams(rb).get(CommonParams.Q);
         LOGGER.debug("Processing query \"{}\". ", query);
-        String ruleQuery = dictionaryRewriterHatcher.getRewriter().rewrite(query);
+        String ruleQuery = dictionaryRewriterHolder.getRewriter().rewrite(query);
         LOGGER.debug("Rewritten query for rule matching to \"{}\"", ruleQuery);
         return ruleQuery;
     }

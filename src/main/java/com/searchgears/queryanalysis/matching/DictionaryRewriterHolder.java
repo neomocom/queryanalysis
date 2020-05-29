@@ -11,15 +11,14 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /**
- * DictionaryRewriterHatcher translates between the query analysis dictionaries and the synonym files
+ * DictionaryRewriterHolder translates between the query analysis dictionaries and the synonym files
  * as need by the DictionaryRewriter.
  * The synonym file format is just there for code re-use and is an implementation detail, so it should never be
  * created directly except for testing.
  * It is not a factory because it needs to go through the solr resource loader dance before it can actually
  * create the DictionaryRewriter.
- * TODO rename to DictionaryRewriterHolder
  */
-public class DictionaryRewriterHatcher {
+public class DictionaryRewriterHolder {
 
     private final Map<String, Matcher> matchers;
 
@@ -27,7 +26,7 @@ public class DictionaryRewriterHatcher {
     private DictionaryRewriter rewriter;
     private SolrResourceLoader loader;
 
-    public DictionaryRewriterHatcher(Map<String, Matcher> matchers, SolrResourceLoader resourceLoader) {
+    public DictionaryRewriterHolder(Map<String, Matcher> matchers, SolrResourceLoader resourceLoader) {
         this.matchers = matchers;
         this.loader = resourceLoader;
         init();

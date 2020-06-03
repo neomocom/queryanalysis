@@ -7,6 +7,8 @@ buildscript {
 
 plugins {
     id 'com.github.ben-manes.versions' version '0.28.0'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.palantir.docker' version '0.25.0'
 }
 
 
@@ -34,11 +36,11 @@ dependencies {
     )
 
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
-    implementation "org.apache.solr:solr-core:$luceneVersion"
     implementation "org.slf4j:slf4j-api:$slf4jVersion"
     implementation "org.slf4j:slf4j-ext:$slf4jVersion"
-    implementation "org.apache.lucene:lucene-core:$luceneVersion"
-    implementation "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
+    compileOnly "org.apache.solr:solr-core:$luceneVersion"
+    compileOnly "org.apache.lucene:lucene-core:$luceneVersion"
+    compileOnly "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
 }
 
 
@@ -54,3 +56,13 @@ test {
     }
     systemProperty "test.solr.allowed.securerandom", "NativePRNG"
 }
+
+
+docker {
+    name 'queryanalysis/solr:8'
+    dockerfile file('docker/solr/Dockerfile')
+    files shadowJar.outputs, 'docker/solr'
+
+}
+
+docker.dependsOn(shadowJar)

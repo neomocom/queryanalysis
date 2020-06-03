@@ -36,6 +36,7 @@ public class QueryAnalysisComponent extends QueryComponent implements SolrCoreAw
     public void init(NamedList args) {
         super.init(args);
         configFileName = args.get("configFile") != null ? args.get("configFile").toString() : "queryanalysis.yml";
+        LOGGER.info("Query Analysis initialized");
     }
 
     @Override

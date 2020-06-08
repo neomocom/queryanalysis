@@ -46,7 +46,9 @@ public class DictionaryRewriterHolder {
         createTempSynFile();
         writeSynFileFromMatcherDictionaries();
         createDictionaryRewriter();
-        deleteTempSynFile();
+        if (deleteSynFile) {
+            deleteTempSynFile();
+        }
     }
 
     private void createTempSynFile() {
@@ -85,12 +87,10 @@ public class DictionaryRewriterHolder {
     }
 
     private void deleteTempSynFile() {
-        if (deleteSynFile) {
-            try {
-                Files.delete(synFilepath);
-            } catch (IOException e) {
-                LOGGER.error("unable to delete temp synonyms file", e);
-            }
+        try {
+            Files.delete(synFilepath);
+        } catch (IOException e) {
+            LOGGER.error("unable to delete temp synonyms file", e);
         }
     }
 
